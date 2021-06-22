@@ -1,11 +1,15 @@
 import React from 'react';
-import { Home } from './pages';
+
+import { BrowserRouter, Route } from 'react-router-dom'
+
+import { Login, NewRoom } from './pages';
 
 function App() {
   return (
-    <div className="App">
-      <Home />
-    </div>
+    <BrowserRouter>
+      <Route exact path='/' component={Login} />
+      <Route path='/create-room' component={NewRoom} />
+    </BrowserRouter>
   );
 }
 
