@@ -1,11 +1,12 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-import { GoogleIcon, Illustration, Logo } from '../assets'
+import { Illustration, Logo } from '../assets'
 import { Button } from '../components';
 
 import '../styles/auth.scss'
 
-function Home() {
+function NewRoom() {
   return (
     <div id='page-auth'>
       <aside>
@@ -16,22 +17,19 @@ function Home() {
       <main>
         <div className='main-content'>
           <img src={Logo} alt="Let me ask" />
-          <button className='create-room'>
-            <img src={GoogleIcon} alt="Logo do Google" />
-            Crie sua sala com o Google
-          </button>
-          <div className='separator'>ou entre em uma sala</div>
+          <h2>Criar uma nova sala</h2>
           <form>
             <input 
               type="text"
-              placeholder="Digite o código da sala"
+              placeholder="Nome da sala"
             />
             <Button type="submit">Entrar na sala</Button>
           </form>
+          <p>Quer entrar em uma sala existente? <Link to="/">clique aqui</Link></p>
         </div>
       </main>
     </div>
   )
 }
 
-export default Home
+export default NewRoom
