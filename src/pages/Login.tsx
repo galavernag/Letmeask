@@ -4,7 +4,6 @@ import { useHistory } from 'react-router-dom';
 import { GoogleIcon, Illustration, Logo } from '../assets'
 import { Button } from '../components';
 import { useAuth } from '../contexts/AuthContext';
-import { auth, firebase } from '../services/firebase'
 
 import '../styles/auth.scss'
 
@@ -18,7 +17,7 @@ function Login() {
       signInWithGoogle()
     }
 
-    // history.push('/')
+    history.push('/')
   }
 
   return (
