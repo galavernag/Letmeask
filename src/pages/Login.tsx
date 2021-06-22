@@ -6,7 +6,7 @@ import { Button } from '../components';
 
 import '../styles/auth.scss'
 
-function Home() {
+function Login() {
   const history = useHistory()
 
   function navigateToCreateRoom() {
@@ -41,4 +41,4 @@ function Home() {
   )
 }
 
-export default Home
+export default Login
