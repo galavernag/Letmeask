@@ -1,3 +1,4 @@
-import Home from './Home'
+import Login from './Login'
+import NewRoom from './NewRoom'
 
-export { Home }
+export { Login, NewRoom }
