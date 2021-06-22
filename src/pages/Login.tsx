@@ -3,14 +3,22 @@ import { useHistory } from 'react-router-dom';
 
 import { GoogleIcon, Illustration, Logo } from '../assets'
 import { Button } from '../components';
+import { useAuth } from '../contexts/AuthContext';
+import { auth, firebase } from '../services/firebase'
 
 import '../styles/auth.scss'
 
 function Login() {
   const history = useHistory()
 
-  function navigateToCreateRoom() {
-    history.push('/create-room')
+  const { user, signInWithGoogle } = useAuth()
+
+  function handleCreateRoom() {
+    if (!user) {
+      signInWithGoogle()
+    }
+
+    // history.push('/')
   }
 
   return (
@@ -23,7 +31,7 @@ function Login() {
       <main>
         <div className='main-content'>
           <img src={Logo} alt="Let me ask" />
-          <button className='create-room' onClick={navigateToCreateRoom}>
+          <button className='create-room' onClick={handleCreateRoom}>
             <img src={GoogleIcon} alt="Logo do Google" />
             Crie sua sala com o Google
           </button>
