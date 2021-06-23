@@ -1,11 +1,11 @@
 import { Copy } from "../assets"
 import '../styles/room-code.scss'
 
-interface RoomCode {
+interface RoomCodeProps {
   roomCode: string
 }
 
-function RoomCode({ roomCode }: RoomCode) {
+function RoomCode({ roomCode }: RoomCodeProps) {
   function copyRoomCodeToClipboard() {
     navigator.clipboard.writeText(roomCode)
   }
