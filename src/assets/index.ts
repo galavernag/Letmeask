@@ -7,6 +7,7 @@ import EmptyQuestions from './images/empty-questions.svg'
 import GoogleIcon from './images/google-icon.svg'
 import Like from './images/like.svg'
 import Logo from './images/logo.svg'
+import Avatar from './images/avatar.svg'
 
 export {
   Answer,
@@ -17,5 +18,6 @@ export {
   GoogleIcon,
   Illustration,
   Like,
-  Logo
+  Logo,
+  Avatar
 }
