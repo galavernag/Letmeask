@@ -1,0 +1,27 @@
+body {
+  position: relative;
+  background: transparent;
+
+  #embbed-main {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 30px;
+    margin: 30px;
+    border-radius: 8px;
+    background-color: #F8F8F8;
+    box-shadow: 5px 5px #00000046;
+
+    > span {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      color: #835AFD;
+    }
+
+    p {
+      margin: 20px 10px;
+      max-width: 474px;
+    }
+  }
+}
