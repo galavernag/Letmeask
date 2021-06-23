@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { FormEvent, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Logo } from "../assets"
-import { Button, RoomCode, UserInfo } from "../components"
+import { Button, Question, RoomCode, UserInfo } from "../components"
 import { useAuth } from "../contexts/AuthContext"
 import { database } from "../services/firebase"
 import toast, { Toaster } from 'react-hot-toast'
@@ -23,7 +23,7 @@ type FirebaseQuestions = Record<string, {
   isHighlighted: boolean
 }>
 
-interface Question {
+interface QuestionProps {
   id: string
   author: {
     name: string
@@ -40,7 +40,7 @@ function Room() {
   const roomId = params.id
 
   const [newQuestion, setNewQuestion] = useState('')
-  const [questions, setQuestions] = useState<Question[]>([])
+  const [questions, setQuestions] = useState<QuestionProps[]>([])
   const [title, setTitle] = useState('')
 
   useEffect(() => {
@@ -141,6 +141,14 @@ function Room() {
             </Button>
           </div>
         </form>
+
+        <div className="question-list">
+          {questions.map(question => {
+            return (
+              <Question key={question.id} author={question.author} content={question.content}/>
+            )
+          })}
+        </div>
       </main>
     </div>
   )
