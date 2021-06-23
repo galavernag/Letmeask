@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { FormEvent, useState } from "react"
 import { useParams } from "react-router-dom"
-import { Avatar, Logo } from "../assets"
+import { Logo } from "../assets"
 import { Button, RoomCode, UserInfo } from "../components"
 import { useAuth } from "../contexts/AuthContext"
 import { database } from "../services/firebase"
