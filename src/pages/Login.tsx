@@ -12,12 +12,12 @@ function Login() {
 
   const { user, signInWithGoogle } = useAuth()
 
-  function handleCreateRoom() {
+  async function handleCreateRoom() {
     if (!user) {
-      signInWithGoogle()
+      await signInWithGoogle()
     }
 
-    history.push('/')
+    history.push('/rooms/create-room')
   }
 
   return (
