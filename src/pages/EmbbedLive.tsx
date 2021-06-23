@@ -9,16 +9,6 @@ interface RoomParams {
   id: string
 }
 
-type FirebaseQuestions = Record<string, {
-  author: {
-    name: string,
-    avatar: string
-  },
-  content: string,
-  isAnswered: boolean
-  isHighlighted: boolean
-}>
-
 interface Question {
   id: string
   author: {
@@ -35,16 +25,16 @@ function EmmbedLive() {
   const roomId = params.id
 
   const [question, setQuestion] = useState<Question | undefined>()
-  const [title, setTitle] = useState('')
 
   useEffect(() => {
     const roomRef = database.ref(`rooms/${roomId}`)
 
     roomRef.on('value', (room) => {
-      const databaseRoom = room.val()
-      const firebaseQuestions: FirebaseQuestions = databaseRoom.questions ?? {}
+      const { questions } = room.val()
 
-      const parsedQuestions = Object.entries(firebaseQuestions).map(([key, value]) => {
+      const question: Question = questions
+
+      const parsedQuestions = Object.entries(question).map(([key, value]) => {
         return {
           id: key,
           content: value.content,
@@ -54,17 +44,12 @@ function EmmbedLive() {
         }
       })
 
-      const highlightedQuestion = parsedQuestions.find(element => element.isHighlighted === true)
-
-      if (!highlightedQuestion) {
-        return
-      }
+      const highlightedQuestion = parsedQuestions.find(question => question.isHighlighted === true)
 
       setQuestion(highlightedQuestion)
     })
   }, [roomId])
 
-  console.log(question)
   return (
     <>
       {question ? (
@@ -73,7 +58,7 @@ function EmmbedLive() {
             Pergunta atual
           </span>
           <p>
-            {question?.content}
+            {question.content}
           </p>
           <UserInfo user={question.author} />
         </div>
