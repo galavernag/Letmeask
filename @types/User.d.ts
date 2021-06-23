@@ -1,7 +1,7 @@
 interface UserProps {
   id: string
   name: string
-  avatar: string
+  avatar?: string
 }
 
 export { UserProps };
