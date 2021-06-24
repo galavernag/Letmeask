@@ -1,7 +1,6 @@
 import { UserInfo } from "../components"
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from "react"
-import { database } from "../services/firebase"
 import '../styles/embbed-live.scss'
 import useRoom from "../hooks/useRoom"
 
