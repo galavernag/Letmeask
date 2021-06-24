@@ -8,63 +8,21 @@ import { database } from "../services/firebase"
 import toast, { Toaster } from 'react-hot-toast'
 
 import '../styles/room.scss'
+import useRoom from "../hooks/useRoom"
 
 interface RoomParams {
   id: string
 }
 
-type FirebaseQuestions = Record<string, {
-  author: {
-    name: string,
-    avatar: string
-  },
-  content: string,
-  isAnswered: boolean
-  isHighlighted: boolean
-}>
-
-interface QuestionProps {
-  id: string
-  author: {
-    name: string
-    avatar: string
-  }
-  content: string
-  isAnswered: boolean
-  isHighlighted: boolean
-}
 
 function Room() {
   const { user } = useAuth()
   const params = useParams<RoomParams>()
   const roomId = params.id
+  const { questions, title } = useRoom({ roomId })
 
   const [newQuestion, setNewQuestion] = useState('')
-  const [questions, setQuestions] = useState<QuestionProps[]>([])
-  const [title, setTitle] = useState('')
-
-  useEffect(() => {
-    const roomRef = database.ref(`rooms/${roomId}`)
-
-    roomRef.on('value', (room) => {
-      const databaseRoom = room.val()
-      const firebaseQuestions: FirebaseQuestions = databaseRoom.questions ?? {}
-
-      const parsedQuestions = Object.entries(firebaseQuestions).map(([key, value]) => {
-        return {
-          id: key,
-          content: value.content,
-          author: value.author,
-          isAnswered: value.isAnswered,
-          isHighlighted: value.isHighlighted
-        }
-      })
-
-      setTitle(databaseRoom.title)
-      setQuestions(parsedQuestions)
-    })
-  }, [roomId])
-
+ 
   async function handleSendQuestion(event: FormEvent) {
     event.preventDefault()
 

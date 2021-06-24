@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useEffect, useState } from "react"
 import { database } from "../services/firebase"
 import '../styles/embbed-live.scss'
+import useRoom from "../hooks/useRoom"
 
 
 interface RoomParams {
@@ -23,32 +24,14 @@ interface Question {
 function EmmbedLive() {
   const params = useParams<RoomParams>()
   const roomId = params.id
+  const { questions } = useRoom({ roomId })
 
   const [question, setQuestion] = useState<Question | undefined>()
 
   useEffect(() => {
-    const roomRef = database.ref(`rooms/${roomId}`)
-
-    roomRef.on('value', (room) => {
-      const { questions } = room.val()
-
-      const question: Question = questions
-
-      const parsedQuestions = Object.entries(question).map(([key, value]) => {
-        return {
-          id: key,
-          content: value.content,
-          author: value.author,
-          isAnswered: value.isAnswered,
-          isHighlighted: value.isHighlighted
-        }
-      })
-
-      const highlightedQuestion = parsedQuestions.find(question => question.isHighlighted === true)
-
-      setQuestion(highlightedQuestion)
-    })
-  }, [roomId])
+    const highlightedQuestion = questions.find((question: Question) => question.isHighlighted === true)
+    setQuestion(highlightedQuestion)
+  }, [questions])
 
   return (
     <>
