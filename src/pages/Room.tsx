@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 import { FormEvent, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Logo } from "../assets"
@@ -13,7 +12,6 @@ import useRoom from "../hooks/useRoom"
 interface RoomParams {
   id: string
 }
-
 
 function Room() {
   const { user } = useAuth()
