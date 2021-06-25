@@ -22,10 +22,6 @@ type FirebaseQuestions = Record<string, {
   isHighlighted: boolean
 }>
 
-interface RoomParams {
-  id: string
-}
-
 interface HookProps {
   roomId: string
 }
