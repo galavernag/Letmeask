@@ -18,6 +18,7 @@
   }
 
   transition: filter 0.2s;
+  transition: ease-in 0.2s;
   
   &:not(:disabled):hover {
     filter: brightness(0.8)
@@ -26,5 +27,16 @@
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+
+  &.outlined {
+    background: #FFF;
+    border: 1px solid #835afd;
+    color: #835afd;
+  }
+
+  &.outlined:hover {
+    background: #835afd;
+    color: #FFFFFF;
   }
 }
