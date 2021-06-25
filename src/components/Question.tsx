@@ -7,15 +7,18 @@ interface QuestionProps {
     name: string
     avatar: string
   }
+  children?: React.ReactNode
 }
 
-function Question({ author, content }: QuestionProps) {
+function Question({ author, content, children }: QuestionProps) {
   return (
     <div className="question">
       <p>{content}</p>
       <footer>
         <UserInfo user={author} />
-        <div></div>
+        <div>
+          {children}
+        </div>
       </footer>
     </div>
   )
