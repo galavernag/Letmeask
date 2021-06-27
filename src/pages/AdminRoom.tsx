@@ -1,6 +1,6 @@
-import { FormEvent, useState } from "react"
-import { useParams } from "react-router-dom"
-import { Logo } from "../assets"
+import { FormEvent, useEffect, useState } from "react"
+import { useHistory, useParams } from "react-router-dom"
+import { Delete, Logo } from "../assets"
 import { Button, Question, RoomCode, UserInfo } from "../components"
 import { useAuth } from "../contexts/AuthContext"
 import { database } from "../services/firebase"
@@ -19,40 +19,34 @@ function AdminRoom() {
   const params = useParams<RoomParams>()
   const roomId = params.id
   const { questions, title } = useRoom({ roomId })
+  const history = useHistory()
 
   const [newQuestion, setNewQuestion] = useState('')
- 
-  async function handleSendQuestion(event: FormEvent) {
-    event.preventDefault()
 
-    if (newQuestion.trim() === '') {
-      toast.error('Tente escrever algo')
-      return
-    }
-
-    if (!user) {
-      toast.error('Lembre-se de se autenticar no Letmeask')
-      return
-    }
-
-    const question = {
-      content: newQuestion,
-      author: {
-        name: user.name,
-        avatar: user.avatar
-      },
-      isHighlighted: false,
-      isAnswered: false
-    }
-
-    try {
-      await database.ref(`rooms/${roomId}/questions`).push(question)
-      setNewQuestion('')
-      toast.success('Pergunta enviada')
-    } catch (err) {
-      toast.error('Houve algum erro durante o envio')
+  async function handleDeleteQuestion(questionId: string) {
+    if (window.confirm('Tem certeza que deseja apagar essa pergunta?')) {
+      await database.ref(`rooms/${roomId}/questions/${questionId}`).remove()
     }
   }
+
+  useEffect(() => {
+    async function run() {
+      const roomRef = database.ref(`rooms/${roomId}`)
+
+      const { authorId } = (await roomRef.get()).val()
+
+      console.log(authorId)
+      console.log(user?.id)
+
+      if (!user?.id === authorId) {
+        window.alert('Você não tem permisões para acessar essa página')
+
+        history.push(`/rooms/${roomId}`)
+      }
+    }
+
+    run()
+  }, [history, roomId, user?.id])
 
   return (
     <div id="page-room">
@@ -82,7 +76,18 @@ function AdminRoom() {
         <div className="question-list">
           {questions.map(question => {
             return (
-              <Question key={question.id} author={question.author} content={question.content}/>
+              <Question 
+                key={question.id} 
+                author={question.author} 
+                content={question.content}
+              >
+                <button
+                  type="button"
+                  onClick={() => handleDeleteQuestion(question.id)}
+                >
+                  <img src={Delete} alt="Remover pergunta" />
+                </button>
+              </Question>
             )
           })}
         </div>
