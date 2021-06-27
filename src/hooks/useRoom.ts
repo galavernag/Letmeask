@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useAuth } from "../contexts/AuthContext"
 import { database } from "../services/firebase"
 
 interface QuestionProps {
@@ -10,6 +11,8 @@ interface QuestionProps {
   content: string
   isAnswered: boolean
   isHighlighted: boolean
+  likeCount: number
+  likeId: string | undefined
 }
 
 type FirebaseQuestions = Record<string, {
@@ -20,6 +23,9 @@ type FirebaseQuestions = Record<string, {
   content: string,
   isAnswered: boolean
   isHighlighted: boolean
+  likes: Record<string, {
+    authorId: string
+  }>
 }>
 
 interface HookProps {
@@ -27,6 +33,7 @@ interface HookProps {
 }
 
 function useRoom({ roomId }: HookProps) {
+  const { user } = useAuth()
   const [questions, setQuestions] = useState<QuestionProps[]>([])
   const [title, setTitle] = useState('')
 
@@ -43,14 +50,20 @@ function useRoom({ roomId }: HookProps) {
           content: value.content,
           author: value.author,
           isAnswered: value.isAnswered,
-          isHighlighted: value.isHighlighted
+          isHighlighted: value.isHighlighted,
+          likeCount: Object.values(value.likes ?? {}).length,
+          likeId: Object.entries(value.likes ?? {}).find(([key, value]) => value.authorId === user?.id)?.[0]
         }
       })
 
       setTitle(databaseRoom.title)
       setQuestions(parsedQuestions)
     })
-  }, [roomId])
+
+    return () => {
+      roomRef.off('value')
+    }
+  }, [roomId, user?.id])
 
   return {
     questions,

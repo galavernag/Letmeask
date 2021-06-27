@@ -1,7 +1,7 @@
-import { FormEvent, useState } from "react"
-import { useParams } from "react-router-dom"
-import { Logo } from "../assets"
-import { Button, Question, RoomCode, UserInfo } from "../components"
+import { useEffect } from "react"
+import { useHistory, useParams } from "react-router-dom"
+import { Answer, Check, Delete, Logo } from "../assets"
+import { Button, Question, RoomCode } from "../components"
 import { useAuth } from "../contexts/AuthContext"
 import { database } from "../services/firebase"
 import toast, { Toaster } from 'react-hot-toast'
@@ -19,50 +19,60 @@ function AdminRoom() {
   const params = useParams<RoomParams>()
   const roomId = params.id
   const { questions, title } = useRoom({ roomId })
+  const history = useHistory()
 
-  const [newQuestion, setNewQuestion] = useState('')
- 
-  async function handleSendQuestion(event: FormEvent) {
-    event.preventDefault()
 
-    if (newQuestion.trim() === '') {
-      toast.error('Tente escrever algo')
-      return
-    }
-
-    if (!user) {
-      toast.error('Lembre-se de se autenticar no Letmeask')
-      return
-    }
-
-    const question = {
-      content: newQuestion,
-      author: {
-        name: user.name,
-        avatar: user.avatar
-      },
-      isHighlighted: false,
-      isAnswered: false
-    }
-
-    try {
-      await database.ref(`rooms/${roomId}/questions`).push(question)
-      setNewQuestion('')
-      toast.success('Pergunta enviada')
-    } catch (err) {
-      toast.error('Houve algum erro durante o envio')
+  async function handleDeleteQuestion(questionId: string) {
+    if (window.confirm('Tem certeza que deseja apagar essa pergunta?')) {
+      try {
+        await database.ref(`rooms/${roomId}/questions/${questionId}`).remove()
+        toast.success('Pegunta excluída')
+      } catch {
+        toast.error('Algum erro aconteceu')
+      }
     }
   }
 
+  async function handleCheckAnswerAsAnswered(questionId: string) {
+    await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+      isAnswered: true
+    })
+  }
+
+  async function handleHighlightQuestion(questionId: string, index: number) {
+    await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+      isHighlighted: !questions[index].isHighlighted
+    })
+  }
+
+  useEffect(() => {
+    async function run() {
+      const roomRef = database.ref(`rooms/${roomId}`)
+
+      const { authorId } = (await roomRef.get()).val()
+
+      console.log(authorId)
+      console.log(user?.id)
+
+      if (!user?.id === authorId) {
+        window.alert('Você não tem permisões para acessar essa página')
+
+        history.push(`/rooms/${roomId}`)
+      }
+    }
+
+    run()
+  }, [history, roomId, user?.id])
+
   return (
     <div id="page-room">
-      <Toaster position='top-left'/>
+      <Toaster position='top-left' />
       <header>
         <div className="content">
           <img src={Logo} alt="Letmeask" />
           <div>
-          <RoomCode roomCode={roomId} />
-          <Button isOutlined>Encerrar sala</Button>
+            <RoomCode roomCode={roomId} />
+            <Button isOutlined>Encerrar sala</Button>
           </div>
         </div>
       </header>
@@ -80,9 +90,38 @@ function AdminRoom() {
           )}
         </div>
         <div className="question-list">
-          {questions.map(question => {
+          {questions.map((question, index) => {
             return (
-              <Question key={question.id} author={question.author} content={question.content}/>
+              <Question
+                key={question.id}
+                author={question.author}
+                content={question.content}
+                isAnswered={question.isAnswered}
+                isHighlighted={question.isHighlighted}
+              >
+                <button
+                  type="button"
+                  onClick={() => handleDeleteQuestion(question.id)}
+                >
+                  <img src={Delete} alt="Remover pergunta" />
+                </button>
+                {!question.isAnswered && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => handleCheckAnswerAsAnswered(question.id)}
+                    >
+                      <img src={Check} alt="Marcar pergunta como respondida" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleHighlightQuestion(question.id, index)}
+                    >
+                      <img src={Answer} alt="Dar destaque à pergunta" />
+                    </button>
+                  </>
+                )}
+              </Question>
             )
           })}
         </div>
