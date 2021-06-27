@@ -1,7 +1,7 @@
-import { FormEvent, useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useHistory, useParams } from "react-router-dom"
-import { Delete, Logo } from "../assets"
-import { Button, Question, RoomCode, UserInfo } from "../components"
+import { Answer, Check, Delete, Logo } from "../assets"
+import { Button, Question, RoomCode } from "../components"
 import { useAuth } from "../contexts/AuthContext"
 import { database } from "../services/firebase"
 import toast, { Toaster } from 'react-hot-toast'
@@ -21,12 +21,28 @@ function AdminRoom() {
   const { questions, title } = useRoom({ roomId })
   const history = useHistory()
 
-  const [newQuestion, setNewQuestion] = useState('')
 
   async function handleDeleteQuestion(questionId: string) {
     if (window.confirm('Tem certeza que deseja apagar essa pergunta?')) {
-      await database.ref(`rooms/${roomId}/questions/${questionId}`).remove()
+      try {
+        await database.ref(`rooms/${roomId}/questions/${questionId}`).remove()
+        toast.success('Pegunta excluída')
+      } catch {
+        toast.error('Algum erro aconteceu')
+      }
     }
+  }
+
+  async function handleCheckAnswerAsAnswered(questionId: string) {
+    await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+      isAnswered: true
+    })
+  }
+
+  async function handleHighlightQuestion(questionId: string, index: number) {
+    await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+      isHighlighted: !questions[index].isHighlighted
+    })
   }
 
   useEffect(() => {
@@ -50,13 +66,13 @@ function AdminRoom() {
 
   return (
     <div id="page-room">
-      <Toaster position='top-left'/>
+      <Toaster position='top-left' />
       <header>
         <div className="content">
           <img src={Logo} alt="Letmeask" />
           <div>
-          <RoomCode roomCode={roomId} />
-          <Button isOutlined>Encerrar sala</Button>
+            <RoomCode roomCode={roomId} />
+            <Button isOutlined>Encerrar sala</Button>
           </div>
         </div>
       </header>
@@ -74,12 +90,14 @@ function AdminRoom() {
           )}
         </div>
         <div className="question-list">
-          {questions.map(question => {
+          {questions.map((question, index) => {
             return (
-              <Question 
-                key={question.id} 
-                author={question.author} 
+              <Question
+                key={question.id}
+                author={question.author}
                 content={question.content}
+                isAnswered={question.isAnswered}
+                isHighlighted={question.isHighlighted}
               >
                 <button
                   type="button"
@@ -87,6 +105,22 @@ function AdminRoom() {
                 >
                   <img src={Delete} alt="Remover pergunta" />
                 </button>
+                {!question.isAnswered && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => handleCheckAnswerAsAnswered(question.id)}
+                    >
+                      <img src={Check} alt="Marcar pergunta como respondida" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleHighlightQuestion(question.id, index)}
+                    >
+                      <img src={Answer} alt="Dar destaque à pergunta" />
+                    </button>
+                  </>
+                )}
               </Question>
             )
           })}
