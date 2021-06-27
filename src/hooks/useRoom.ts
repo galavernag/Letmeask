@@ -12,7 +12,7 @@ interface QuestionProps {
   isAnswered: boolean
   isHighlighted: boolean
   likeCount: number
-  hasLiked: boolean
+  likeId: string | undefined
 }
 
 type FirebaseQuestions = Record<string, {
@@ -52,7 +52,7 @@ function useRoom({ roomId }: HookProps) {
           isAnswered: value.isAnswered,
           isHighlighted: value.isHighlighted,
           likeCount: Object.values(value.likes ?? {}).length,
-          hasLiked: Object.values(value.likes ?? {}).some(like => like.authorId === user?.id)
+          likeId: Object.entries(value.likes ?? {}).find(([key, value]) => value.authorId === user?.id)?.[0]
         }
       })
 
